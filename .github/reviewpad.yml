@@ -1,0 +1,42 @@
+api-version: reviewpad.com/v3.x
+
+workflows:
+  - name: label-pull-request-with-size
+    always-run: true
+    if:
+      - rule: $size() <= 25
+        extra-actions:
+          - $addLabel("small")
+      - rule: $size() > 25 && $size() <= 100
+        extra-actions:
+          - $addLabel("medium")
+      - rule: $size() > 100
+        extra-actions:
+          - $addLabel("large")
+
+  - name: label-pull-requests-based-on-path
+    always-run: true
+    if:
+      - rule: $hasFilePattern("onpremise/**")
+        extra-actions:
+          - $addLabel("jira-onpremise")
+      - rule: $hasFilePattern("cloud/**")
+        extra-actions:
+          - $addLabel("jira-cloud")
+      - rule: $hasFilePattern("docs/**")
+        extra-actions:
+          - $addLabel("documentation")
+
+  - name: welcome-first-contributors
+    always-run: true
+    if:
+      - rule: $totalCreatedPullRequests($author()) == 1
+        extra-actions:
+          - '$commentOnce("Thank you so much for your first contribution!")'
+  
+  - name: lint-commits
+    always-run: true
+    if:
+      - rule: '!$hasLinearHistory()'
+        extra-actions:
+          - '$warn("This pull request does not have linear history - please fix it!")'

@@ -1,0 +1,20 @@
+name: Reviewpad
+
+on:
+  pull_request_target:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  reviewpad_job:
+    runs-on: ubuntu-latest
+    name: Reviewpad
+    steps:
+      # Run Reviewpad on all new Pull Requests! 🦄
+      - name: Reviewpad
+        uses: reviewpad/action@v3.x
+        with:
+          # Uses a default Reviewpad configuration file to get your started.
+          # For customization and documentation, see https://github.com/reviewpad/action
+          file: .github/reviewpad.yml
