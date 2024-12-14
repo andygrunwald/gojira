@@ -1,121 +1,123 @@
-[
-  {
-    "id": "12310361",
-    "name": "Blocked",
-    "inward": "Blocked",
-    "outward": "Blocked",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310361"
-  },
-  {
-    "id": "10032",
-    "name": "Blocker",
-    "inward": "is blocked by",
-    "outward": "blocks",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10032"
-  },
-  {
-    "id": "12310460",
-    "name": "Child-Issue",
-    "inward": "is a child of",
-    "outward": "is a parent of",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310460"
-  },
-  {
-    "id": "10020",
-    "name": "Cloners",
-    "inward": "is cloned by",
-    "outward": "is a clone of",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10020"
-  },
-  {
-    "id": "12310060",
-    "name": "Container",
-    "inward": "Is contained by",
-    "outward": "contains",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310060"
-  },
-  {
-    "id": "12310461",
-    "name": "Dependency",
-    "inward": "Dependency",
-    "outward": "Dependency",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310461"
-  },
-  {
-    "id": "12310360",
-    "name": "Dependent",
-    "inward": "Dependent",
-    "outward": "Dependent",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310360"
-  },
-  {
-    "id": "12310000",
-    "name": "Duplicate",
-    "inward": "is duplicated by",
-    "outward": "duplicates",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310000"
-  },
-  {
-    "id": "12310010",
-    "name": "Incorporates",
-    "inward": "is part of",
-    "outward": "incorporates",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310010"
-  },
-  {
-    "id": "12310462",
-    "name": "Parent Feature",
-    "inward": "Parent Feature",
-    "outward": "Parent Feature",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310462"
-  },
-  {
-    "id": "12310560",
-    "name": "Problem/Incident",
-    "inward": "is caused by",
-    "outward": "causes",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310560"
-  },
-  {
-    "id": "10030",
-    "name": "Reference",
-    "inward": "is related to",
-    "outward": "relates to",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10030"
-  },
-  {
-    "id": "12310050",
-    "name": "Regression",
-    "inward": "is broken by",
-    "outward": "breaks",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310050"
-  },
-  {
-    "id": "12310260",
-    "name": "Related",
-    "inward": "is related to",
-    "outward": "relates to",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310260"
-  },
-  {
-    "id": "12310040",
-    "name": "Required",
-    "inward": "is required by",
-    "outward": "requires",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310040"
-  },
-  {
-    "id": "12310051",
-    "name": "Supercedes",
-    "inward": "is superceded by",
-    "outward": "supercedes",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310051"
-  },
-  {
-    "id": "10001",
-    "name": "dependent",
-    "inward": "is depended upon by",
-    "outward": "depends upon",
-    "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10001"
-  }
-]
+{
+  "issueLinkTypes": [
+    {
+      "id": "12310361",
+      "name": "Blocked",
+      "inward": "Blocked",
+      "outward": "Blocked",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310361"
+    },
+    {
+      "id": "10032",
+      "name": "Blocker",
+      "inward": "is blocked by",
+      "outward": "blocks",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10032"
+    },
+    {
+      "id": "12310460",
+      "name": "Child-Issue",
+      "inward": "is a child of",
+      "outward": "is a parent of",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310460"
+    },
+    {
+      "id": "10020",
+      "name": "Cloners",
+      "inward": "is cloned by",
+      "outward": "is a clone of",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10020"
+    },
+    {
+      "id": "12310060",
+      "name": "Container",
+      "inward": "Is contained by",
+      "outward": "contains",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310060"
+    },
+    {
+      "id": "12310461",
+      "name": "Dependency",
+      "inward": "Dependency",
+      "outward": "Dependency",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310461"
+    },
+    {
+      "id": "12310360",
+      "name": "Dependent",
+      "inward": "Dependent",
+      "outward": "Dependent",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310360"
+    },
+    {
+      "id": "12310000",
+      "name": "Duplicate",
+      "inward": "is duplicated by",
+      "outward": "duplicates",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310000"
+    },
+    {
+      "id": "12310010",
+      "name": "Incorporates",
+      "inward": "is part of",
+      "outward": "incorporates",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310010"
+    },
+    {
+      "id": "12310462",
+      "name": "Parent Feature",
+      "inward": "Parent Feature",
+      "outward": "Parent Feature",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310462"
+    },
+    {
+      "id": "12310560",
+      "name": "Problem/Incident",
+      "inward": "is caused by",
+      "outward": "causes",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310560"
+    },
+    {
+      "id": "10030",
+      "name": "Reference",
+      "inward": "is related to",
+      "outward": "relates to",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10030"
+    },
+    {
+      "id": "12310050",
+      "name": "Regression",
+      "inward": "is broken by",
+      "outward": "breaks",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310050"
+    },
+    {
+      "id": "12310260",
+      "name": "Related",
+      "inward": "is related to",
+      "outward": "relates to",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310260"
+    },
+    {
+      "id": "12310040",
+      "name": "Required",
+      "inward": "is required by",
+      "outward": "requires",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310040"
+    },
+    {
+      "id": "12310051",
+      "name": "Supercedes",
+      "inward": "is superceded by",
+      "outward": "supercedes",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/12310051"
+    },
+    {
+      "id": "10001",
+      "name": "dependent",
+      "inward": "is depended upon by",
+      "outward": "depends upon",
+      "self": "https://issues.apache.org/jira/rest/api/2/issueLinkType/10001"
+    }
+  ]
+}
