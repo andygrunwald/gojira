@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -288,6 +289,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer httpResp.Body.Close()
 
 	err = CheckResponse(httpResp)
 	if err != nil {
@@ -298,8 +300,11 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	if v != nil {
 		// Open a NewDecoder and defer closing the reader only if there is a provided interface to decode to
-		defer httpResp.Body.Close()
-		err = json.NewDecoder(httpResp.Body).Decode(v)
+		body, err := ioutil.ReadAll(httpResp.Body)
+		if err != nil {
+			return newResponse(httpResp, nil), err
+		}
+		err = json.Unmarshal(body, v)
 	}
 
 	resp := newResponse(httpResp, v)
