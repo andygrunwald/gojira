@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
 )
 
@@ -44,14 +45,12 @@ type userSearch []userSearchParam
 
 type userSearchF func(userSearch) userSearch
 
-// Get gets user info from Jira using its Account Id
+// Get gets user info from Jira using its key
 //
-// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-rest-api-2-user-get
+// Jira API doc: https://docs.atlassian.com/software/jira/docs/api/REST/9.9.0/#api/2/user-getUser
 //
-// TODO Double check this method if this works as expected, is using the latest API and the response is complete
-// This double check effort is done for v2 - Remove this two lines if this is completed.
-func (s *UserService) Get(ctx context.Context, accountId string) (*User, *Response, error) {
-	apiEndpoint := fmt.Sprintf("/rest/api/2/user?accountId=%s", accountId)
+func (s *UserService) Get(ctx context.Context, key string) (*User, *Response, error) {
+	apiEndpoint := fmt.Sprintf("/rest/api/2/user?key=%s", html.EscapeString(key))
 	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
@@ -65,15 +64,12 @@ func (s *UserService) Get(ctx context.Context, accountId string) (*User, *Respon
 	return user, resp, nil
 }
 
-// GetByAccountID gets user info from Jira
-// Searching by another parameter that is not accountId is deprecated,
-// but this method is kept for backwards compatibility
-// Jira API docs: https://docs.atlassian.com/jira/REST/cloud/#api/2/user-getUser
+// GetByUsername gets user info from Jira
 //
-// TODO Double check this method if this works as expected, is using the latest API and the response is complete
-// This double check effort is done for v2 - Remove this two lines if this is completed.
-func (s *UserService) GetByAccountID(ctx context.Context, accountID string) (*User, *Response, error) {
-	apiEndpoint := fmt.Sprintf("/rest/api/2/user?accountId=%s", accountID)
+// Jira API doc: https://docs.atlassian.com/software/jira/docs/api/REST/9.9.0/#api/2/user-getUser
+//
+func (s *UserService) GetByUsername(ctx context.Context, username string) (*User, *Response, error) {
+	apiEndpoint := fmt.Sprintf("/rest/api/2/user?username=%s", html.EscapeString(username))
 	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err

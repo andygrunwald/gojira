@@ -250,7 +250,7 @@ type Watches struct {
 type Watcher struct {
 	Self        string `json:"self,omitempty" structs:"self,omitempty"`
 	Name        string `json:"name,omitempty" structs:"name,omitempty"`
-	AccountID   string `json:"accountId,omitempty" structs:"accountId,omitempty"`
+	Key         string `json:"key,omitempty" structs:"key,omitempty"`
 	DisplayName string `json:"displayName,omitempty" structs:"displayName,omitempty"`
 	Active      bool   `json:"active,omitempty" structs:"active,omitempty"`
 }
@@ -1364,8 +1364,8 @@ func (s *IssueService) GetWatchers(ctx context.Context, issueID string) (*[]User
 	result := []User{}
 	for _, watcher := range watches.Watchers {
 		var user *User
-		if watcher.AccountID != "" {
-			user, resp, err = s.client.User.GetByAccountID(context.Background(), watcher.AccountID)
+		if watcher.Name != "" {
+			user, resp, err = s.client.User.Get(context.Background(), watcher.Key)
 			if err != nil {
 				return nil, resp, NewJiraError(resp, err)
 			}
