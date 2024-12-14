@@ -956,6 +956,36 @@ func (s *IssueService) DeleteComment(ctx context.Context, issueID, commentID str
 	return nil
 }
 
+// DeleteWorklogRecord Deletes a work log from an issueID.
+//
+// Jira API docs:https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-worklogs/#api-rest-api-3-issue-issueidorkey-worklog-id-delete
+//
+// TODO Double check this method if this works as expected, is using the latest API and the response is complete
+// This double check effort is done for v2 - Remove this two lines if this is completed.
+func (s *IssueService) DeleteWorklogRecord(ctx context.Context, issueID, worklogID string, options ...func(*http.Request) error) error {
+	apiEndpoint := fmt.Sprintf("rest/api/2/issue/%s/worklog/%s", issueID, worklogID)
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, apiEndpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	for _, option := range options {
+		err = option(req)
+		if err != nil {
+			return err
+		}
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		jerr := NewJiraError(resp, err)
+		return jerr
+	}
+	defer resp.Body.Close()
+
+	return nil
+}
+
 // AddWorklogRecord adds a new worklog record to issueID.
 //
 // https://developer.atlassian.com/cloud/jira/platform/rest/#api-api-2-issue-issueIdOrKey-worklog-post

@@ -250,6 +250,23 @@ func TestIssueService_DeleteComment(t *testing.T) {
 	}
 }
 
+func TestIssueService_DeleteWorklogRecord(t *testing.T) {
+	setup()
+	defer teardown()
+	testMux.HandleFunc("/rest/api/2/issue/10000/worklog/10001", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		testRequestURL(t, r, "/rest/api/2/issue/10000/worklog/10001")
+
+		w.WriteHeader(http.StatusNoContent)
+		fmt.Fprint(w, `{}`)
+	})
+
+	err := testClient.Issue.DeleteWorklogRecord(context.Background(), "10000", "10001")
+	if err != nil {
+		t.Errorf("Error given: %s", err)
+	}
+}
+
 func TestIssueService_AddWorklogRecord(t *testing.T) {
 	setup()
 	defer teardown()
