@@ -24,9 +24,9 @@ type Request struct {
 
 // RequestFieldValue is a request field.
 type RequestFieldValue struct {
-	FieldID string `json:"fieldId,omitempty" structs:"fieldId,omitempty"`
-	Label   string `json:"label,omitempty" structs:"label,omitempty"`
-	Value   string `json:"value,omitempty" structs:"value,omitempty"`
+	FieldID string      `json:"fieldId,omitempty" structs:"fieldId,omitempty"`
+	Label   string      `json:"label,omitempty" structs:"label,omitempty"`
+	Value   interface{} `json:"value,omitempty" structs:"value,omitempty"`
 }
 
 // RequestDate is the date format used in requests.
