@@ -97,6 +97,21 @@ func (s *UserService) Get(ctx context.Context, accountId string) (*User, *Respon
 	return user, resp, nil
 }
 
+func (s *UserService) GetByUserName(ctx context.Context, username string) (*User, *Response, error) {
+	apiEndpoint := fmt.Sprintf("/rest/api/2/user?username=%s", username)
+	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(User)
+	resp, err := s.client.Do(req, user)
+	if err != nil {
+		return nil, resp, NewJiraError(resp, err)
+	}
+	return user, resp, nil
+}
+
 // GetByAccountID gets user info from Jira
 // Searching by another parameter that is not accountId is deprecated,
 // but this method is kept for backwards compatibility
