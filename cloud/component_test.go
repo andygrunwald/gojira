@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -29,6 +30,43 @@ func TestComponentService_Create_Success(t *testing.T) {
 	}
 	if err != nil {
 		t.Errorf("Error given: %s", err)
+	}
+}
+
+func TestComponentService_Update_Success(t *testing.T) {
+	setup()
+	defer teardown()
+	testAPIEndpoint := "/rest/api/3/component/42102"
+
+	// Mock simple component with a concrete name
+	component := ProjectComponent{}
+	component.ID = "42102"
+	component.Name = "Brand new component"
+
+	raw_component_put_response, err := os.ReadFile("../testing/mock-data/component_updated.json")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	testMux.HandleFunc(testAPIEndpoint, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		testRequestURL(t, r, testAPIEndpoint)
+		fmt.Fprint(w, string(raw_component_put_response))
+	})
+
+	componentUpdated, _, err := testClient.Component.Update(context.Background(), &component)
+
+	// Now we check, that the received component contains values directly from the server response
+	// updatedNameFromServerResponse = "Some Component UPDATED" (see the ../testing/mock-data/component_updated.json file)
+	if componentUpdated == nil {
+		t.Error("Expected component. Component is nil")
+	}
+	if err != nil {
+		t.Errorf("Error given: %s", err)
+	}
+
+	// Check that "UPDATED" is inside the name, see the ../testing/mock-data/component_updated.json file
+	if !strings.Contains(componentUpdated.Name, "UPDATED") {
+		t.Errorf("Expected 'UPDATED' in name. Got %s", componentUpdated.Name)
 	}
 }
 

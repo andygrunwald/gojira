@@ -1,0 +1,50 @@
+{
+    "self": "https://issues.apache.org/jira/rest/api/2/component/42102",
+    "id": "42102",
+    "name": "Some Component UPDATED",
+    "lead": {
+      "self": "https://issues.apache.org/jira/rest/api/2/user?username=firstname.lastname@apache.org",
+      "key": "firstname.lastname",
+      "name": "firstname.lastname@apache.org",
+      "avatarUrls": {
+        "48x48": "https://issues.apache.org/jira/secure/useravatar?ownerId=firstname.lastname&avatarId=31851",
+        "24x24": "https://issues.apache.org/jira/secure/useravatar?size=small&ownerId=firstname.lastname&avatarId=31851",
+        "16x16": "https://issues.apache.org/jira/secure/useravatar?size=xsmall&ownerId=firstname.lastname&avatarId=31851",
+        "32x32": "https://issues.apache.org/jira/secure/useravatar?size=medium&ownerId=firstname.lastname&avatarId=31851"
+      },
+      "displayName": "Firstname Lastname",
+      "active": true
+    },
+    "assigneeType": "COMPONENT_LEAD",
+    "assignee": {
+      "self": "https://issues.apache.org/jira/rest/api/2/user?username=firstname.lastname@apache.org",
+      "key": "firstname.lastname",
+      "name": "firstname.lastname@apache.org",
+      "avatarUrls": {
+        "48x48": "https://issues.apache.org/jira/secure/useravatar?ownerId=firstname.lastname&avatarId=31851",
+        "24x24": "https://issues.apache.org/jira/secure/useravatar?size=small&ownerId=firstname.lastname&avatarId=31851",
+        "16x16": "https://issues.apache.org/jira/secure/useravatar?size=xsmall&ownerId=firstname.lastname&avatarId=31851",
+        "32x32": "https://issues.apache.org/jira/secure/useravatar?size=medium&ownerId=firstname.lastname&avatarId=31851"
+      },
+      "displayName": "Firstname Lastname",
+      "active": true
+    },
+    "realAssigneeType": "COMPONENT_LEAD",
+    "realAssignee": {
+      "self": "https://issues.apache.org/jira/rest/api/2/user?username=firstname.lastname@apache.org",
+      "key": "firstname.lastname",
+      "name": "firstname.lastname@apache.org",
+      "avatarUrls": {
+        "48x48": "https://issues.apache.org/jira/secure/useravatar?ownerId=firstname.lastname&avatarId=31851",
+        "24x24": "https://issues.apache.org/jira/secure/useravatar?size=small&ownerId=firstname.lastname&avatarId=31851",
+        "16x16": "https://issues.apache.org/jira/secure/useravatar?size=xsmall&ownerId=firstname.lastname&avatarId=31851",
+        "32x32": "https://issues.apache.org/jira/secure/useravatar?size=medium&ownerId=firstname.lastname&avatarId=31851"
+      },
+      "displayName": "Firstname Lastname",
+      "active": true
+    },
+    "isAssigneeTypeValid": true,
+    "project": "ABC",
+    "projectId": 12345,
+    "archived": false
+  }

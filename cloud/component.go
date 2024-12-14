@@ -93,7 +93,25 @@ func (s *ComponentService) Get(ctx context.Context, componentID string) (*Projec
 	return component, resp, nil
 }
 
-// TODO Add "Update component" method. See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-components/#api-rest-api-3-component-id-put
+// Update updates an existing component.
+//
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-components/#api-rest-api-3-component-id-put
+func (s *ComponentService) Update(ctx context.Context, component *ProjectComponent) (*ProjectComponent, *Response, error) {
+	apiEndpoint := fmt.Sprintf("rest/api/3/component/%s", component.ID)
+	req, err := s.client.NewRequest(ctx, http.MethodPut, apiEndpoint, component)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Returning the same pointer here is pointless, we return the component from the response instead.
+	updatedComponent := new(ProjectComponent)
+	resp, err := s.client.Do(req, updatedComponent)
+	if err != nil {
+		return nil, resp, NewJiraError(resp, err)
+	}
+
+	return updatedComponent, resp, nil
+}
 
 // TODO Add "Delete component" method. See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-components/#api-rest-api-3-component-id-delete
 
