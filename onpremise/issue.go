@@ -752,6 +752,32 @@ func (s *IssueService) DeleteLink(ctx context.Context, linkID string) (*Response
 	return resp, nil
 }
 
+// GetWorklogRecord gets a worklog for an issue.
+//
+// https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-worklogs/#api-rest-api-2-issue-issueidorkey-worklog-id-get
+//
+// TODO Double check this method if this works as expected, is using the latest API and the response is complete
+// This double check effort is done for v2 - Remove this two lines if this is completed.
+func (s *IssueService) GetWorklogRecord(ctx context.Context, issueID, worklogID string, options ...func(*http.Request) error) (*WorklogRecord, *Response, error) {
+	apiEndpoint := fmt.Sprintf("rest/api/2/issue/%s/worklog/%s", issueID, worklogID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for _, option := range options {
+		err = option(req)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	v := new(WorklogRecord)
+	resp, err := s.client.Do(req, v)
+	return v, resp, err
+}
+
 // GetWorklogs gets all the worklogs for an issue.
 // This method is especially important if you need to read all the worklogs, not just the first page.
 //

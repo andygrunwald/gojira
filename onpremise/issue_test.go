@@ -1583,6 +1583,114 @@ func TestIssueService_GetWorklogs(t *testing.T) {
 	}
 }
 
+func TestIssueService_GetWorklogRecord(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tt := []struct {
+		name      string
+		response  string
+		issueId   string
+		worklogId string
+		uri       string
+		worklog   *WorklogRecord
+		err       error
+		option    *AddWorklogQueryOptions
+	}{
+		{
+			name:      "simple worklog",
+			response:  `{"id": "3","self": "http://kelpie9:8081/rest/api/2/issue/10002/worklog/3","author":{"self":"http://www.example.com/jira/rest/api/2/user?username=fred","name":"fred","displayName":"Fred F. User","active":false},"updateAuthor":{"self":"http://www.example.com/jira/rest/api/2/user?username=fred","name":"fred","displayName":"Fred F. User","active":false},"created":"2016-03-16T04:22:37.356+0000","updated":"2016-03-16T04:22:37.356+0000","comment":"","started":"2016-03-16T04:22:37.356+0000","timeSpent": "1h","timeSpentSeconds": 3600,"issueId":"10002"}`,
+			issueId:   "10002",
+			worklogId: "3",
+			uri:       "/rest/api/2/issue/%s/worklog/%s",
+			worklog: &WorklogRecord{
+				Self: "http://kelpie9:8081/rest/api/2/issue/10002/worklog/3",
+				Author: &User{
+					Self:        "http://www.example.com/jira/rest/api/2/user?username=fred",
+					Name:        "fred",
+					DisplayName: "Fred F. User",
+				},
+				UpdateAuthor: &User{
+					Self:        "http://www.example.com/jira/rest/api/2/user?username=fred",
+					Name:        "fred",
+					DisplayName: "Fred F. User",
+				},
+				Created:          getTime(time.Date(2016, time.March, 16, 4, 22, 37, 356000000, time.UTC)),
+				Started:          getTime(time.Date(2016, time.March, 16, 4, 22, 37, 356000000, time.UTC)),
+				Updated:          getTime(time.Date(2016, time.March, 16, 4, 22, 37, 356000000, time.UTC)),
+				TimeSpent:        "1h",
+				TimeSpentSeconds: 3600,
+				ID:               "3",
+				IssueID:          "10002",
+			},
+		},
+		{
+			name:      "expanded worklog",
+			response:  `{"id":"3","self":"http://kelpie9:8081/rest/api/2/issue/10002/worklog/3","author":{"self":"http://www.example.com/jira/rest/api/2/user?username=fred","name":"fred","displayName":"Fred F. User","active":false},"updateAuthor":{"self":"http://www.example.com/jira/rest/api/2/user?username=fred","name":"fred","displayName":"Fred F. User","active":false},"created":"2016-03-16T04:22:37.356+0000","updated":"2016-03-16T04:22:37.356+0000","comment":"","started":"2016-03-16T04:22:37.356+0000","timeSpent":"1h","timeSpentSeconds":3600,"issueId":"10002","properties":[{"key":"foo","value":{"bar":"baz"}}]}`,
+			issueId:   "10002",
+			worklogId: "3",
+			uri:       "/rest/api/2/issue/%s/worklog/%s?expand=properties",
+			worklog: &WorklogRecord{
+				Self: "http://kelpie9:8081/rest/api/2/issue/10002/worklog/3",
+				Author: &User{
+					Self:        "http://www.example.com/jira/rest/api/2/user?username=fred",
+					Name:        "fred",
+					DisplayName: "Fred F. User",
+				},
+				UpdateAuthor: &User{
+					Self:        "http://www.example.com/jira/rest/api/2/user?username=fred",
+					Name:        "fred",
+					DisplayName: "Fred F. User",
+				},
+				Created:          getTime(time.Date(2016, time.March, 16, 4, 22, 37, 356000000, time.UTC)),
+				Started:          getTime(time.Date(2016, time.March, 16, 4, 22, 37, 356000000, time.UTC)),
+				Updated:          getTime(time.Date(2016, time.March, 16, 4, 22, 37, 356000000, time.UTC)),
+				TimeSpent:        "1h",
+				TimeSpentSeconds: 3600,
+				ID:               "3",
+				IssueID:          "10002",
+				Properties: []EntityProperty{
+					{
+						Key: "foo",
+						Value: map[string]interface{}{
+							"bar": "baz",
+						},
+					},
+				},
+			},
+			option: &AddWorklogQueryOptions{Expand: "properties"},
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			uri := fmt.Sprintf(tc.uri, tc.issueId, tc.worklogId)
+			testMux.HandleFunc(uri, func(w http.ResponseWriter, r *http.Request) {
+				testMethod(t, r, http.MethodGet)
+				testRequestURL(t, r, uri)
+				_, _ = fmt.Fprint(w, tc.response)
+			})
+
+			var record *WorklogRecord
+			var err error
+
+			if tc.option != nil {
+				record, _, err = testClient.Issue.GetWorklogRecord(context.Background(), tc.issueId, tc.worklogId, WithQueryOptions(tc.option))
+			} else {
+				record, _, err = testClient.Issue.GetWorklogRecord(context.Background(), tc.issueId, tc.worklogId)
+			}
+
+			if err != nil && !cmp.Equal(err, tc.err) {
+				t.Errorf("unexpected error: %v", err)
+			}
+
+			if !cmp.Equal(record, tc.worklog) {
+				t.Errorf("unexpected worklog structure: %s", cmp.Diff(record, tc.worklog))
+			}
+		})
+	}
+}
+
 func TestIssueService_GetWatchers(t *testing.T) {
 	setup()
 	defer teardown()
