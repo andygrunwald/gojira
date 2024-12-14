@@ -257,6 +257,22 @@ func WithAccountId(accountId string) UserSearchF {
 	}
 }
 
+// WithIssueKey sets the issue key to search
+func WithIssueKey(issueKey string) UserSearchF {
+	return func(s UserSearch) UserSearch {
+		s = append(s, UserSearchParam{name: "issueKey", value: issueKey})
+		return s
+	}
+}
+
+// WithProject sets the project to search
+func WithProject(project string) UserSearchF {
+	return func(s UserSearch) UserSearch {
+		s = append(s, UserSearchParam{name: "project", value: project})
+		return s
+	}
+}
+
 // WithProperty sets the property (Property keys are specified by path) to search
 func WithProperty(property string) UserSearchF {
 	return func(s UserSearch) UserSearch {
@@ -289,6 +305,38 @@ func (s *UserService) Find(ctx context.Context, property string, tweaks ...UserS
 	}
 
 	apiEndpoint := fmt.Sprintf("/rest/api/2/user/search?%s", queryString[:len(queryString)-1])
+	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	users := []User{}
+	resp, err := s.client.Do(req, &users)
+	if err != nil {
+		return nil, resp, NewJiraError(resp, err)
+	}
+	return users, resp, nil
+}
+
+// FindAssignable gets all assignable users for an issue:
+//
+//  Accepts username, project, issueKey, startAt, and maxResults as tweaks
+//
+// https://docs.atlassian.com/software/jira/docs/api/REST/1000.1568.0/#api/2/user-findAssignableUsers
+//
+// TODO Double check this method if this works as expected, is using the latest API and the response is complete
+// This double check effort is done for v2 - Remove this two lines if this is completed.
+func (s *UserService) FindAssignable(ctx context.Context, tweaks ...UserSearchF) ([]User, *Response, error) {
+	search := []UserSearchParam{}
+	for _, f := range tweaks {
+		search = f(search)
+	}
+
+	var queryString = ""
+	for _, param := range search {
+		queryString += param.name + "=" + param.value + "&"
+	}
+	apiEndpoint := fmt.Sprintf("/rest/api/2/user/assignable/search?%s", queryString)
 	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err

@@ -282,3 +282,26 @@ func TestUserService_Find_SuccessParams(t *testing.T) {
 		t.Error("Expected user. User is nil")
 	}
 }
+
+func TestUserService_FindAssignable_Success(t *testing.T) {
+	setup()
+	defer teardown()
+	testMux.HandleFunc("/rest/api/2/user/assignable/search", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		testRequestURL(t, r, "/rest/api/2/user/assignable/search?username=fred@example.com&project=DAPHNE&issueKey=DAPHNE-11&maxResults=100&startAt=0")
+
+		fmt.Fprint(w, `[{"self":"http://www.example.com/jira/rest/api/2/user?accountId=000000000000000000000000","key":"fred",
+        "name":"fred","emailAddress":"fred@example.com","avatarUrls":{"48x48":"http://www.example.com/jira/secure/useravatar?size=large&ownerId=fred",
+        "24x24":"http://www.example.com/jira/secure/useravatar?size=small&ownerId=fred","16x16":"http://www.example.com/jira/secure/useravatar?size=xsmall&ownerId=fred",
+        "32x32":"http://www.example.com/jira/secure/useravatar?size=medium&ownerId=fred"},"displayName":"Fred F. User","active":true,"timeZone":"Australia/Sydney","groups":{"size":3,"items":[
+        {"name":"jira-user","self":"http://www.example.com/jira/rest/api/2/group?groupname=jira-user"},{"name":"jira-admin",
+        "self":"http://www.example.com/jira/rest/api/2/group?groupname=jira-admin"},{"name":"important","self":"http://www.example.com/jira/rest/api/2/group?groupname=important"
+        }]},"applicationRoles":{"size":1,"items":[]},"expand":"groups,applicationRoles"}]`)
+	})
+
+	if user, _, err := testClient.User.FindAssignable(context.Background(), WithUsername("fred@example.com"), WithProject("DAPHNE"), WithIssueKey("DAPHNE-11"), WithMaxResults(100), WithStartAt(0)); err != nil {
+		t.Errorf("Error given: %s", err)
+	} else if user == nil {
+		t.Error("Expected user. User is nil")
+	}
+}
