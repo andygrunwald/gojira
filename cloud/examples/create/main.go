@@ -55,7 +55,7 @@ func main() {
 		},
 	}
 
-	issue, _, err := client.Issue.Create(context.Background(), &i)
+	issue, _, err := client.Issue.Create(context.Background(), &i, nil)
 	if err != nil {
 		panic(err)
 	}

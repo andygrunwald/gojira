@@ -537,6 +537,12 @@ type searchResult struct {
 	Total      int     `json:"total" structs:"total"`
 }
 
+// CreateIssueOptions specifies the optional parameters for the Create Issue
+// method.
+type CreateIssueOptions struct {
+	UpdateHistory bool `url:"updateHistory,omitempty"`
+}
+
 // GetQueryOptions specifies the optional parameters for the Get Issue methods
 type GetQueryOptions struct {
 	// Fields is the list of fields to return for the issue. By default, all fields are returned.
@@ -799,35 +805,44 @@ func WithQueryOptions(options interface{}) func(*http.Request) error {
 	}
 }
 
-// Create creates an issue or a sub-task from a JSON representation.
-// Creating a sub-task is similar to creating a regular issue, with two important differences:
-// The issueType field must correspond to a sub-task issue type and you must provide a parent field in the issue create request containing the id or key of the parent issue.
+// Create creates an issue or a sub-task.
 //
-// Jira API docs: https://docs.atlassian.com/jira/REST/latest/#api/2/issue-createIssues
+// Creating a sub-task is similar to creating a regular issue, with two
+// important differences: the issueType field must correspond to a sub-task
+// issue type, and you must provide a parent field in the issue containing the
+// ID or key of the parent issue.
+//
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post
 //
 // TODO Double check this method if this works as expected, is using the latest API and the response is complete
 // This double check effort is done for v2 - Remove this two lines if this is completed.
-func (s *IssueService) Create(ctx context.Context, issue *Issue) (*Issue, *Response, error) {
+func (s *IssueService) Create(ctx context.Context, issue *Issue, opts *CreateIssueOptions) (*Issue, *Response, error) {
 	apiEndpoint := "rest/api/2/issue"
-	req, err := s.client.NewRequest(ctx, http.MethodPost, apiEndpoint, issue)
+
+	url, err := addOptions(apiEndpoint, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, url, issue)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	resp, err := s.client.Do(req, nil)
 	if err != nil {
-		// incase of error return the resp for further inspection
-		return nil, resp, err
+		jerr := NewJiraError(resp, err)
+		return nil, resp, jerr
 	}
 	defer resp.Body.Close()
 
-	responseIssue := new(Issue)
+	var responseIssue Issue
 	err = json.NewDecoder(resp.Body).Decode(&responseIssue)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return responseIssue, resp, nil
+	return &responseIssue, resp, nil
 }
 
 // Update updates an issue from a JSON representation,
