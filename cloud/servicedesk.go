@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"github.com/google/go-querystring/query"
 )
@@ -208,4 +210,106 @@ func (s *ServiceDeskService) ListCustomers(ctx context.Context, serviceDeskID in
 	}
 
 	return customerList, resp, nil
+}
+
+// ListComments lists comments for a ServiceDesk issue.
+//
+// https://docs.atlassian.com/jira-servicedesk/REST/3.6.2/#servicedeskapi/request/{issueIdOrKey}/comment-getRequestComments
+func (s *ServiceDeskService) ListComments(ctx context.Context, issueKeyOrID string, params ServiceDeskCommentsListParams) (*ServiceDeskCommentsList, *Response, error) {
+	apiEndPoint := fmt.Sprintf("rest/servicedeskapi/request/%s/comment", issueKeyOrID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, apiEndPoint, nil)
+	req.Header.Set("Accept", "application/json")
+
+	query := url.Values{}
+	query.Add("start", strconv.Itoa(params.Start))
+	query.Add("limit", strconv.Itoa(params.Limit))
+
+	if params.HidePublic {
+		query.Add("public", "false")
+	} else {
+		query.Add("public", "true")
+	}
+
+	if params.HideInternal {
+		query.Add("internal", "false")
+	} else {
+		query.Add("internal", "true")
+	}
+
+	// Add parameters to url
+	req.URL.RawQuery = query.Encode()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	orgs := new(ServiceDeskCommentsList)
+	resp, err := s.client.Do(req, &orgs)
+	if err != nil {
+		jerr := NewJiraError(resp, err)
+		return nil, resp, jerr
+	}
+	defer resp.Body.Close()
+
+	return orgs, resp, nil
+}
+
+type ServiceDeskCommentsListParams struct {
+	// Specifies whether to hide public comments or not. Default: false.
+	HidePublic bool
+	// Specifies whether to hide internal comments or not. Default: false.
+	HideInternal bool
+	// The starting index of the returned comments. Base index: 0. See the Pagination(https://docs.atlassian.com/jira-servicedesk/REST/3.6.2/#pagination) section for more details.
+	Start int
+	// The maximum number of comments to return per page. Default: 50. See the Pagination(https://docs.atlassian.com/jira-servicedesk/REST/3.6.2/#pagination) section for more details.
+	Limit int
+}
+
+type ServiceDeskComment struct {
+	ID     string `json:"id"`
+	Body   string `json:"body"`
+	Public bool   `json:"public"`
+	Author struct {
+		Name         string `json:"name"`
+		Key          string `json:"key"`
+		EmailAddress string `json:"emailAddress"`
+		DisplayName  string `json:"displayName"`
+		Active       bool   `json:"active"`
+		TimeZone     string `json:"timeZone"`
+		Links        struct {
+			JiraRest   string `json:"jiraRest"`
+			AvatarUrls struct {
+				Four8X48  string `json:"48x48"`
+				Two4X24   string `json:"24x24"`
+				One6X16   string `json:"16x16"`
+				Three2X32 string `json:"32x32"`
+			} `json:"avatarUrls"`
+			Self string `json:"self"`
+		} `json:"_links"`
+	} `json:"author"`
+	Created struct {
+		Iso8601     string `json:"iso8601"`
+		Jira        string `json:"jira"`
+		Friendly    string `json:"friendly"`
+		EpochMillis int64  `json:"epochMillis"`
+	} `json:"created"`
+	Links struct {
+		Self string `json:"self"`
+	} `json:"_links"`
+}
+
+type ServiceDeskCommentsList struct {
+	Expands    []interface{} `json:"_expands"`
+	Size       int           `json:"size"`
+	Start      int           `json:"start"`
+	Limit      int           `json:"limit"`
+	IsLastPage bool          `json:"isLastPage"`
+	Links      struct {
+		Base    string `json:"base"`
+		Context string `json:"context"`
+		Next    string `json:"next"`
+		Prev    string `json:"prev"`
+	} `json:"_links"`
+	Values []ServiceDeskComment `json:"values"`
 }

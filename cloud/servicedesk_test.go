@@ -429,3 +429,105 @@ func TestServiceDeskService_ListCustomers(t *testing.T) {
 		})
 	}
 }
+
+func TestServiceDeskService_ListComments(t *testing.T) {
+	issueID := "2000"
+
+	var gotParams struct {
+		Public   bool
+		Internal bool
+		Start    int
+		Limit    int
+	}
+
+	setup()
+	defer teardown()
+
+	testMux.HandleFunc(fmt.Sprintf("/rest/servicedeskapi/request/%s/comment", issueID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		testRequestURL(t, r, fmt.Sprintf("/rest/servicedeskapi/request/%s/comment", issueID))
+
+		qs := r.URL.Query()
+		gotParams.Start, _ = strconv.Atoi(qs.Get("start"))
+		gotParams.Limit, _ = strconv.Atoi(qs.Get("limit"))
+		gotParams.Public, _ = strconv.ParseBool(qs.Get("public"))
+		gotParams.Internal, _ = strconv.ParseBool(qs.Get("internal"))
+
+		w.Write([]byte(`{
+			"_expands": [],
+			"size": 1,
+			"start": 1,
+			"limit": 1,
+			"isLastPage": false,
+			"_links": {
+				"base": "http://host:port/context/rest/servicedeskapi",
+				"context": "context",
+				"next": "http://host:port/context/rest/servicedeskapi/request/2000/comment?start=2&limit=1",
+				"prev": "http://host:port/context/rest/servicedeskapi/request/2000/comment?start=0&limit=1"
+			},
+			"values": [
+				{
+					"id": "1000",
+					"body": "Hello there",
+					"public": true,
+					"author": {
+						"name": "fred",
+						"key": "fred",
+						"emailAddress": "fred@example.com",
+						"displayName": "Fred F. User",
+						"active": true,
+						"timeZone": "Australia/Sydney",
+						"_links": {
+							"jiraRest": "http://www.example.com/jira/rest/api/2/user?username=fred",
+							"avatarUrls": {
+								"48x48": "http://www.example.com/jira/secure/useravatar?size=large&ownerId=fred",
+								"24x24": "http://www.example.com/jira/secure/useravatar?size=small&ownerId=fred",
+								"16x16": "http://www.example.com/jira/secure/useravatar?size=xsmall&ownerId=fred",
+								"32x32": "http://www.example.com/jira/secure/useravatar?size=medium&ownerId=fred"
+							},
+							"self": "http://www.example.com/jira/rest/api/2/user?username=fred"
+						}
+					},
+					"created": {
+						"iso8601": "2015-10-09T10:22:00+0700",
+						"jira": "2015-10-09T10:22:00.000+0700",
+						"friendly": "Today 10:22 AM",
+						"epochMillis": 1444360920000
+					},
+					"_links": {
+						"self": "http://host:port/context/rest/servicedeskapi/request/2000/comment/1000"
+					}
+				}
+			]
+		}`))
+	})
+
+	commentList, _, err := testClient.ServiceDesk.ListComments(context.Background(), issueID, ServiceDeskCommentsListParams{
+		HideInternal: true,
+		Start:        0,
+		Limit:        100,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := 0, gotParams.Start; want != got {
+		t.Fatalf("want start: %d, got %d", want, got)
+	}
+
+	if want, got := 100, gotParams.Limit; want != got {
+		t.Fatalf("want limit: %d, got %d", want, got)
+	}
+
+	if want, got := true, gotParams.Public; want != got {
+		t.Fatalf("want public: %t, got %t", want, got)
+	}
+
+	if want, got := false, gotParams.Internal; want != got {
+		t.Fatalf("want internal: %t, got %t", want, got)
+	}
+
+	if want, got := 1, len(commentList.Values); want != got {
+		t.Fatalf("want comment length: %d, got %d", want, got)
+	}
+}
