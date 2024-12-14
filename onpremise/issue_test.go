@@ -155,6 +155,60 @@ func TestIssueService_Update(t *testing.T) {
 	}
 }
 
+func TestIssueService_Update_with_false_opts(t *testing.T) {
+	setup()
+	defer teardown()
+	testMux.HandleFunc("/rest/api/2/issue/PROJ-9001", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		testRequestURL(t, r, "/rest/api/2/issue/PROJ-9001")
+		testRequestParams(t, r, map[string]string{"notifyUsers": "false"})
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	i := &Issue{
+		Key: "PROJ-9001",
+		Fields: &IssueFields{
+			Description: "example bug report",
+		},
+	}
+	issue, _, err := testClient.Issue.Update(context.Background(), i, &UpdateQueryOptions{NotifyUsers: Bool(false)})
+	if issue == nil {
+		t.Error("Expected issue. Issue is nil")
+	}
+	if err != nil {
+		t.Errorf("Error given: %s", err)
+	}
+
+}
+
+func TestIssueService_Update_with_multiple_opts(t *testing.T) {
+	setup()
+	defer teardown()
+	testMux.HandleFunc("/rest/api/2/issue/PROJ-9001", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		testRequestURL(t, r, "/rest/api/2/issue/PROJ-9001")
+		testRequestParams(t, r, map[string]string{"notifyUsers": "false", "overrideScreenSecurity": "true"})
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	i := &Issue{
+		Key: "PROJ-9001",
+		Fields: &IssueFields{
+			Description: "example bug report",
+		},
+	}
+	issue, _, err := testClient.Issue.Update(context.Background(), i, &UpdateQueryOptions{NotifyUsers: Bool(false), OverrideScreenSecurity: Bool(true)})
+	if issue == nil {
+		t.Error("Expected issue. Issue is nil")
+	}
+	if err != nil {
+		t.Errorf("Error given: %s", err)
+	}
+
+}
+
 func TestIssueService_UpdateIssue(t *testing.T) {
 	setup()
 	defer teardown()

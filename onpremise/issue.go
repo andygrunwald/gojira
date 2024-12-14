@@ -31,9 +31,9 @@ type IssueService service
 
 // UpdateQueryOptions specifies the optional parameters to the Edit issue
 type UpdateQueryOptions struct {
-	NotifyUsers            bool `url:"notifyUsers,omitempty"`
-	OverrideScreenSecurity bool `url:"overrideScreenSecurity,omitempty"`
-	OverrideEditableFlag   bool `url:"overrideEditableFlag,omitempty"`
+	NotifyUsers            *bool `url:"notifyUsers,omitempty"`
+	OverrideScreenSecurity *bool `url:"overrideScreenSecurity,omitempty"`
+	OverrideEditableFlag   *bool `url:"overrideEditableFlag,omitempty"`
 }
 
 // Issue represents a Jira issue.
@@ -544,8 +544,8 @@ type GetQueryOptions struct {
 	// Properties is the list of properties to return for the issue. By default no properties are returned.
 	Properties string `url:"properties,omitempty"`
 	// FieldsByKeys if true then fields in issues will be referenced by keys instead of ids
-	FieldsByKeys  bool   `url:"fieldsByKeys,omitempty"`
-	UpdateHistory bool   `url:"updateHistory,omitempty"`
+	FieldsByKeys  *bool  `url:"fieldsByKeys,omitempty"`
+	UpdateHistory *bool  `url:"updateHistory,omitempty"`
 	ProjectKeys   string `url:"projectKeys,omitempty"`
 }
 
@@ -558,12 +558,12 @@ type GetWorklogsQueryOptions struct {
 }
 
 type AddWorklogQueryOptions struct {
-	NotifyUsers          bool   `url:"notifyUsers,omitempty"`
+	NotifyUsers          *bool  `url:"notifyUsers,omitempty"`
 	AdjustEstimate       string `url:"adjustEstimate,omitempty"`
 	NewEstimate          string `url:"newEstimate,omitempty"`
 	ReduceBy             string `url:"reduceBy,omitempty"`
 	Expand               string `url:"expand,omitempty"`
-	OverrideEditableFlag bool   `url:"overrideEditableFlag,omitempty"`
+	OverrideEditableFlag *bool  `url:"overrideEditableFlag,omitempty"`
 }
 
 // CustomFields represents custom fields of Jira

@@ -73,6 +73,19 @@ func testRequestParams(t *testing.T, r *http.Request, want map[string]string) {
 
 }
 
+func Test_addOptions(t *testing.T) {
+	v, err := addOptions("rest/api/2/issue/123", &UpdateQueryOptions{NotifyUsers: Bool(false)})
+	if err != nil {
+		t.Errorf("Expected no error. Got: %+v", err)
+	}
+
+	expectedOutput := "rest/api/2/issue/123?notifyUsers=false"
+	if v != expectedOutput {
+		t.Errorf("Expected: %+v, got: %+v", expectedOutput, v)
+	}
+
+}
+
 func TestNewClient_WrongUrl(t *testing.T) {
 	c, err := NewClient("://issues.apache.org/jira/", nil)
 

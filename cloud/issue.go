@@ -31,9 +31,9 @@ type IssueService service
 
 // UpdateQueryOptions specifies the optional parameters to the Edit issue
 type UpdateQueryOptions struct {
-	NotifyUsers            bool `url:"notifyUsers,omitempty"`
-	OverrideScreenSecurity bool `url:"overrideScreenSecurity,omitempty"`
-	OverrideEditableFlag   bool `url:"overrideEditableFlag,omitempty"`
+	NotifyUsers            *bool `url:"notifyUsers,omitempty"`
+	OverrideScreenSecurity *bool `url:"overrideScreenSecurity,omitempty"`
+	OverrideEditableFlag   *bool `url:"overrideEditableFlag,omitempty"`
 }
 
 // Issue represents a Jira issue.
@@ -545,8 +545,8 @@ type GetQueryOptions struct {
 	// Properties is the list of properties to return for the issue. By default no properties are returned.
 	Properties string `url:"properties,omitempty"`
 	// FieldsByKeys if true then fields in issues will be referenced by keys instead of ids
-	FieldsByKeys  bool   `url:"fieldsByKeys,omitempty"`
-	UpdateHistory bool   `url:"updateHistory,omitempty"`
+	FieldsByKeys  *bool  `url:"fieldsByKeys,omitempty"`
+	UpdateHistory *bool  `url:"updateHistory,omitempty"`
 	ProjectKeys   string `url:"projectKeys,omitempty"`
 }
 
@@ -559,12 +559,12 @@ type GetWorklogsQueryOptions struct {
 }
 
 type AddWorklogQueryOptions struct {
-	NotifyUsers          bool   `url:"notifyUsers,omitempty"`
+	NotifyUsers          *bool  `url:"notifyUsers",omitempty`
 	AdjustEstimate       string `url:"adjustEstimate,omitempty"`
 	NewEstimate          string `url:"newEstimate,omitempty"`
 	ReduceBy             string `url:"reduceBy,omitempty"`
 	Expand               string `url:"expand,omitempty"`
-	OverrideEditableFlag bool   `url:"overrideEditableFlag,omitempty"`
+	OverrideEditableFlag *bool  `url:"overrideEditableFlag,omitempty"`
 }
 
 // CustomFields represents custom fields of Jira
@@ -868,8 +868,24 @@ func (s *IssueService) Update(ctx context.Context, issue *Issue, opts *UpdateQue
 // TODO Double check this method if this works as expected, is using the latest API and the response is complete
 // This double check effort is done for v2 - Remove this two lines if this is completed.
 func (s *IssueService) UpdateIssue(ctx context.Context, jiraID string, data map[string]interface{}) (*Response, error) {
-	apiEndpoint := fmt.Sprintf("rest/api/2/issue/%v", jiraID)
-	req, err := s.client.NewRequest(ctx, http.MethodPut, apiEndpoint, data)
+	return s.UpdateIssueWithOptions(ctx, jiraID, data, &UpdateQueryOptions{})
+}
+
+// UpdateIssueWithOptions updates an issue from a JSON patch,
+// while also specifying query params. The issue is found by key.
+//
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issues/#api-rest-api-2-issue-issueidorkey-put
+// Caller must close resp.Body
+//
+// TODO Double check this method if this works as expected, is using the latest API and the response is complete
+// This double check effort is done for v2 - Remove this two lines if this is completed.
+func (s *IssueService) UpdateIssueWithOptions(ctx context.Context, jiraID string, data map[string]interface{}, opts *UpdateQueryOptions) (*Response, error) {
+	a := fmt.Sprintf("rest/api/2/issue/%v", jiraID)
+	url, err := addOptions(a, opts)
+	if err != nil {
+		return nil, err
+	}
+	req, err := s.client.NewRequest(ctx, http.MethodPut, url, data)
 	if err != nil {
 		return nil, err
 	}

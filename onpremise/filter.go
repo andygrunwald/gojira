@@ -37,7 +37,7 @@ type Filter struct {
 
 // GetMyFiltersQueryOptions specifies the optional parameters for the Get My Filters method
 type GetMyFiltersQueryOptions struct {
-	IncludeFavourites bool   `url:"includeFavourites,omitempty"`
+	IncludeFavourites *bool   `url:"includeFavourites,omitempty"`
 	Expand            string `url:"expand,omitempty"`
 }
 
