@@ -139,6 +139,19 @@ type BoardConfigurationColumnStatus struct {
 	Self string `json:"self"`
 }
 
+// GetBoardIssuesOptions specifies the optional parameters to the BoardService.GetIssuesForBacklog
+type GetBoardIssuesOptions struct {
+	// Jql filters results to sprints in the specified jql query
+	Jql string `json:"jql"`
+
+	SearchOptions
+}
+
+// IssuesInBoardResult represents a wrapper struct for search result
+type IssuesInBoardResult struct {
+	Issues []Issue `json:"issues"`
+}
+
 // GetAllBoards will returns all boards. This only includes boards that the user has permission to view.
 //
 // Jira API docs: https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getAllBoards
@@ -259,6 +272,30 @@ func (s *BoardService) GetAllSprints(ctx context.Context, boardID int64, options
 	}
 
 	return result, resp, err
+}
+
+// GetIssuesForBacklog returns all issues from a backlog, for a given board ID.
+// This only includes issues that the user has permission to view.
+//
+// Jira API docs: https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/#api-rest-agile-1-0-board-boardid-backlog-get
+func (s *BoardService) GetIssuesForBacklog(ctx context.Context, boardID int64, options *GetBoardIssuesOptions) ([]Issue, *Response, error) {
+	apiEndpoint := fmt.Sprintf("rest/agile/1.0/board/%d/backlog", boardID)
+	url, err := addOptions(apiEndpoint, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req, err := s.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(IssuesInBoardResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		err = NewJiraError(resp, err)
+	}
+
+	return result.Issues, resp, err
 }
 
 // GetBoardConfiguration will return a board configuration for a given board Id

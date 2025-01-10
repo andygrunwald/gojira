@@ -233,3 +233,31 @@ func TestBoardService_GetBoardConfigoration(t *testing.T) {
 		t.Errorf("Expected a max of 0 issues in progress. Got %d", inProgressColumn.Max)
 	}
 }
+
+func TestBoardService_GetIssuesForBacklog(t *testing.T) {
+	setup()
+	defer teardown()
+	testapiEndpoint := "/rest/agile/1.0/board/123/backlog"
+
+	raw, err := os.ReadFile("../testing/mock-data/backlog_in_board.json")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	testMux.HandleFunc(testapiEndpoint, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		testRequestURL(t, r, testapiEndpoint)
+		fmt.Fprint(w, string(raw))
+	})
+
+	issues, _, err := testClient.Board.GetIssuesForBacklog(context.Background(), 123, nil)
+	if err != nil {
+		t.Errorf("Error given: %v", err)
+	}
+	if issues == nil {
+		t.Error("Expected issues in sprint list. Issues list is nil")
+	}
+	if len(issues) != 1 {
+		t.Errorf("Expect there to be 1 issue in the sprint, found %v", len(issues))
+	}
+
+}
